@@ -1,37 +1,38 @@
 pipeline {
-    agent none
-    stages {
-	
-	stage('Non-Parallel Stage') {
-	    agent {
-                        label "master"
-                }
-        steps {
-                echo 'This stage will be executed first'
-                }
-        }
+    agent any
 
-	
-        stage('Run Tests') {
-            parallel {
-                stage('Test On Windows') {
-                    agent {
-                        label "Windows_Node"
-                    }
-                    steps {
-                        echo "Task1 on Agent"
-                    }
-                    
-                }
-                stage('Test On Master') {
-                    agent {
-                        label "master"
-                    }
-                    steps {
-						echo "Task1 on Master"
-					}
-                }
+    stages {
+        stage('Git-Checkout') {
+            steps {
+                echo 'checking out from git-repo';
+                git 'https://github.com/Ashish-1699/webapp.git'
             }
+        }
+        stage('Build') {
+            steps {
+                echo 'Building the project!';
+                bat 'mvn package'
+            }
+        }    
+        stage('Deploy') {
+            steps {
+                echo 'Deploying to tomcat server';
+                deploy adapters: [tomcat8(credentialsId: 'd65a214e-cf17-4a75-b14d-ae88c8022a9d', path: '', url: 'http://localhost:8082/')], contextPath: 'Web_App', onFailure: false, war: '**/*.war'
+            }
+        }
+    }
+    post {
+        success {
+            echo "successful";
+        }
+        failure {
+            echo "unsuccessful";
+        }
+        unstable {
+            echo "unstable";
+        }
+        changed {
+            echo "state of pipeline is changed";
         }
     }
 }
