@@ -23,16 +23,16 @@ pipeline {
     }
     post {
         success {
-            echo "successful";
+            echo "successful!";
         }
         failure {
-            echo "unsuccessful";
+            echo "unsuccessful!";
         }
         unstable {
-            echo "unstable";
+            echo "unstable!";
         }
         changed {
-            echo "state of pipeline is changed";
+            echo "state of pipeline is changed!";
         }
     }
 }
